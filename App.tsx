@@ -10,9 +10,31 @@
 
 import React from 'react';
 import NavigationRouter from './app/NavigationRouter';
+import DatabaseProvider from '@nozbe/watermelondb/DatabaseProvider';
+import { database } from './app/database/configureDB';
 
 const App = () => {
-  return <NavigationRouter />;
+  /// ReactNativeFlipperDatabases - START
+
+  if (__DEV__) {
+    // Import connectDatabases function and required DBDrivers
+    const {
+      connectDatabases,
+      WatermelonDB,
+    } = require('react-native-flipper-databases');
+
+    connectDatabases([
+      new WatermelonDB(database), // Pass in database definition
+    ]);
+  }
+
+  /// ReactNativeFlipperDatabases - END
+
+  return (
+    <DatabaseProvider database={database}>
+      <NavigationRouter />
+    </DatabaseProvider>
+  );
 };
 
 export default App;

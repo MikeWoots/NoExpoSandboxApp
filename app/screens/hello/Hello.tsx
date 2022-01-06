@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
-import { HelloProps } from '../NavigationRouter';
+import { HelloProps } from '../../NavigationRouter';
+import { useNavigation } from '@react-navigation/native';
 
 const styles = StyleSheet.create({
   container: {
@@ -15,7 +16,13 @@ const styles = StyleSheet.create({
   },
 });
 
-const Hello: React.FC<HelloProps> = ({ route, navigation }: HelloProps) => {
+type Props = {
+  users: [];
+};
+
+const Hello = ({ users }: Props) => {
+  const { navigation, route } = useNavigation<HelloProps>();
+
   const [enthusiasmLevel, setEnthusiasmLevel] = React.useState(
     route.params.baseEnthusiasmLevel,
   );
@@ -51,7 +58,7 @@ const Hello: React.FC<HelloProps> = ({ route, navigation }: HelloProps) => {
         title="Say Goodbye"
         onPress={() =>
           navigation.navigate('Goodbye', {
-            name: 'Mike',
+            name: users[0].name,
             baseEnthusiasmLevel: 0,
           })
         }

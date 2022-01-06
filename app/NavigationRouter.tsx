@@ -3,7 +3,7 @@ import {
   NavigationContainer,
   useNavigationContainerRef,
 } from '@react-navigation/native';
-import Hello from './components/Hello';
+import Hello from './screens/hello';
 import React from 'react';
 import Goodbye from './components/Goodbye';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
