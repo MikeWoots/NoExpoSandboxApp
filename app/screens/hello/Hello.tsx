@@ -1,7 +1,15 @@
 import React from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
-import { HelloProps } from '../../NavigationRouter';
-import { useNavigation } from '@react-navigation/native';
+import {
+  Button,
+  FlatList,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+import { useUsers } from '../../database/hooks/use-user';
+import { useEnthusiasmLevel } from './hooks/use-enthusiasm-level';
+import UserListItem from './components/UserListItem';
 
 const styles = StyleSheet.create({
   container: {
@@ -14,32 +22,30 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     margin: 16,
   },
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+  },
 });
 
 type Props = {
-  users: [];
+  users: any;
+  navigation: any; //need to figure out best way to type the navigation
+  route: any;
 };
 
-const Hello = ({ users }: Props) => {
-  const { navigation, route } = useNavigation<HelloProps>();
-
-  const [enthusiasmLevel, setEnthusiasmLevel] = React.useState(
-    route.params.baseEnthusiasmLevel,
-  );
-
-  const onIncrement = (): void => setEnthusiasmLevel(enthusiasmLevel + 1);
-  const onDecrement = (): void =>
-    setEnthusiasmLevel(enthusiasmLevel > 0 ? enthusiasmLevel - 1 : 0);
-
-  const getExclamationMarks = (numChars: number): string =>
-    numChars > 0 ? Array(numChars + 1).join('!') : '';
+const Hello = ({ users, navigation, route }: Props) => {
+  const { onIncrement, onDecrement, getExclamationMarks } =
+    useEnthusiasmLevel();
+  const { addUser } = useUsers();
+  const [text, onChangeText] = React.useState('');
+  const selectedUser = users[0] ? users[0] : '';
 
   return (
     <View style={styles.container}>
-      <Text style={styles.greeting}>
-        Hello {route.params.name}
-        {getExclamationMarks(enthusiasmLevel)}
-      </Text>
+      <Text style={styles.greeting}>Hello {getExclamationMarks()}</Text>
       <View>
         <Button
           title="Increase enthusiasm"
@@ -54,15 +60,27 @@ const Hello = ({ users }: Props) => {
           color="red"
         />
       </View>
+      <TextInput
+        style={styles.input}
+        onChangeText={onChangeText}
+        value={text}
+      />
+      <Button title="Add user" onPress={() => addUser(text)} color="red" />
       <Button
         title="Say Goodbye"
         onPress={() =>
           navigation.navigate('Goodbye', {
-            name: users[0].name,
+            name: selectedUser.name,
             baseEnthusiasmLevel: 0,
           })
         }
         color="red"
+      />
+      <FlatList
+        data={users}
+        keyExtractor={item => item.id}
+        renderItem={({ item }) => <UserListItem user={item} text={text} />}
+        showsVerticalScrollIndicator={false}
       />
     </View>
   );
